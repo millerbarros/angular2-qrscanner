@@ -149,6 +149,7 @@ export class QrScannerComponent implements OnInit, OnDestroy, AfterViewInit {
                 try {
                     self.gCtx.drawImage(self.videoElement, 0, 0, self.canvasWidth, self.canvasHeight);
                     self.qrCode.decode(self.qrCanvas.nativeElement);
+                    if (!this.stopAfterScan) self.captureTimeout = setTimeout(captureToCanvas, self.updateTime);
                 } catch (e) {
                     if (this.debug) {
                         console.log(e);
@@ -219,9 +220,6 @@ export class QrScannerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private decodeCallback(decoded: string) {
         this.onRead.emit(decoded);
-        if (this.stopAfterScan) {
-            this.stopScanning();
-        }
     }
 
     private load(): void {
