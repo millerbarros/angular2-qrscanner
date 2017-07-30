@@ -70,7 +70,7 @@ export class QrScannerComponent implements OnInit, OnDestroy, AfterViewInit {
     private stop = false;
 
     private nativeElement: ElementRef;
-    private supported = true;
+    public supported = true;
 
     private captureTimeout: any;
 
