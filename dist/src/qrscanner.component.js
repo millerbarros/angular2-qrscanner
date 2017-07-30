@@ -105,6 +105,7 @@ var QrScannerComponent = (function () {
                 try {
                     self.gCtx.drawImage(self.videoElement, 0, 0, self.canvasWidth, self.canvasHeight);
                     self.qrCode.decode(self.qrCanvas.nativeElement);
+                    if (!this.stopAfterScan) { self.captureTimeout = setTimeout(captureToCanvas, self.updateTime); }
                 }
                 catch (e) {
                     if (this.debug) {
@@ -179,9 +180,6 @@ var QrScannerComponent = (function () {
     });
     QrScannerComponent.prototype.decodeCallback = function (decoded) {
         this.onRead.emit(decoded);
-        if (this.stopAfterScan) {
-            this.stopScanning();
-        }
     };
     QrScannerComponent.prototype.load = function () {
         var _this = this;
