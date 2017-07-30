@@ -61,7 +61,7 @@ var QRCode = (function () {
         }
         var end = new Date().getTime();
         var time = end - start;
-        console.log(time);
+        if(this.debug) { console.log("Capture time:", time); }
         return str;
     };
     QRCode.prototype.grayScaleToBitmap = function (grayScale) {
