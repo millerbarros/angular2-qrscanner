@@ -81,42 +81,45 @@ var QrScannerComponent = (function () {
         }
     };
     QrScannerComponent.prototype.connectDevice = function (options) {
-        var self = this;
-        function success(stream) {
-            self.stream = stream;
-            if (self.isWebkit || self.isMoz) {
-                self.videoElement.src = window.URL.createObjectURL(stream);
+        var _this = this;
+        var success = function (stream) {
+            _this.stream = stream;
+            if (_this.isWebkit || _this.isMoz) {
+                _this.videoElement.src = window.URL.createObjectURL(stream);
             }
             else {
-                self.videoElement.src = stream;
+                _this.videoElement.src = stream;
             }
-            self.gUM = true;
-            self.captureTimeout = setTimeout(captureToCanvas, self.updateTime);
-        }
-        function error(error) {
-            this.gUM = false;
+            _this.gUM = true;
+            _this.captureTimeout = setTimeout(captureToCanvas, _this.updateTime);
             return;
-        }
-        function captureToCanvas() {
-            if (self.stop || !self.isDeviceConnected) {
+        };
+        var error = function () {
+            _this.gUM = false;
+            return;
+        };
+        var captureToCanvas = function () {
+            if (_this.stop || !_this.isDeviceConnected) {
                 return;
             }
-            if (self.gUM) {
+            if (_this.gUM) {
                 try {
-                    self.gCtx.drawImage(self.videoElement, 0, 0, self.canvasWidth, self.canvasHeight);
-                    self.qrCode.decode(self.qrCanvas.nativeElement);
-                    if (!this.stopAfterScan) { self.captureTimeout = setTimeout(captureToCanvas, self.updateTime); }
+                    _this.gCtx.drawImage(_this.videoElement, 0, 0, _this.canvasWidth, _this.canvasHeight);
+                    _this.qrCode.decode(_this.qrCanvas.nativeElement);
+                    if (!_this.stopAfterScan) {
+                        _this.captureTimeout = setTimeout(function () { return captureToCanvas(); }, _this.updateTime);
+                    }
                 }
                 catch (e) {
-                    if (this.debug) {
+                    if (_this.debug) {
                         console.log(e);
                     }
-                    self.captureTimeout = setTimeout(captureToCanvas, self.updateTime);
+                    _this.captureTimeout = setTimeout(function () { return captureToCanvas(); }, _this.updateTime);
                 }
             }
-        }
+        };
         if (this.isDeviceConnected && !this.captureTimeout) {
-            this.captureTimeout = setTimeout(captureToCanvas, this.updateTime);
+            this.captureTimeout = setTimeout(function () { return captureToCanvas(); }, this.updateTime);
             return;
         }
         var _navigator = navigator;
@@ -192,35 +195,35 @@ var QrScannerComponent = (function () {
             this.findMediaDevices.then(function (options) { return _this.connectDevice(options); });
         }
     };
+    QrScannerComponent.decorators = [
+        { type: core_1.Component, args: [{
+                    moduleId: 'module.id',
+                    selector: 'qr-scanner',
+                    styles: [
+                        ':host video {height: auto; width: 100%;}',
+                        ':host .mirrored { transform: rotateY(180deg); -webkit-transform:rotateY(180deg); -moz-transform:rotateY(180deg); }'
+                    ],
+                    template: "\n        <ng-container [ngSwitch]=\"supported\">\n            <ng-container *ngSwitchDefault>\n                <canvas #qrCanvas [width]=\"canvasWidth\" [height]=\"canvasHeight\" hidden=\"true\"></canvas>\n                <div #videoWrapper></div>\n            </ng-container>\n            <ng-container *ngSwitchCase=\"false\">\n                <p>\n                    You are using an <strong>outdated</strong> browser.\n                    Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> to improve your experience.\n                </p>\n            </ng-container>\n        </ng-container>"
+                },] },
+    ];
+    /** @nocollapse */
+    QrScannerComponent.ctorParameters = function () { return [
+        { type: core_1.Renderer2, },
+        { type: core_1.ElementRef, },
+    ]; };
+    QrScannerComponent.propDecorators = {
+        'canvasWidth': [{ type: core_1.Input },],
+        'canvasHeight': [{ type: core_1.Input },],
+        'facing': [{ type: core_1.Input },],
+        'debug': [{ type: core_1.Input },],
+        'mirror': [{ type: core_1.Input },],
+        'stopAfterScan': [{ type: core_1.Input },],
+        'updateTime': [{ type: core_1.Input },],
+        'onRead': [{ type: core_1.Output },],
+        'videoWrapper': [{ type: core_1.ViewChild, args: ['videoWrapper',] },],
+        'qrCanvas': [{ type: core_1.ViewChild, args: ['qrCanvas',] },],
+    };
     return QrScannerComponent;
 }());
-QrScannerComponent.decorators = [
-    { type: core_1.Component, args: [{
-                moduleId: 'module.id',
-                selector: 'qr-scanner',
-                styles: [
-                    ':host video {height: auto; width: 100%;}',
-                    ':host .mirrored { transform: rotateY(180deg); -webkit-transform:rotateY(180deg); -moz-transform:rotateY(180deg); }'
-                ],
-                template: "\n        <ng-container [ngSwitch]=\"supported\">\n            <ng-container *ngSwitchDefault>\n                <canvas #qrCanvas [width]=\"canvasWidth\" [height]=\"canvasHeight\" hidden=\"true\"></canvas>\n                <div #videoWrapper></div>\n            </ng-container>\n            <ng-container *ngSwitchCase=\"false\">\n                <p>\n                    You are using an <strong>outdated</strong> browser.\n                    Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> to improve your experience.\n                </p>\n            </ng-container>\n        </ng-container>"
-            },] },
-];
-/** @nocollapse */
-QrScannerComponent.ctorParameters = function () { return [
-    { type: core_1.Renderer2, },
-    { type: core_1.ElementRef, },
-]; };
-QrScannerComponent.propDecorators = {
-    'canvasWidth': [{ type: core_1.Input },],
-    'canvasHeight': [{ type: core_1.Input },],
-    'facing': [{ type: core_1.Input },],
-    'debug': [{ type: core_1.Input },],
-    'mirror': [{ type: core_1.Input },],
-    'stopAfterScan': [{ type: core_1.Input },],
-    'updateTime': [{ type: core_1.Input },],
-    'onRead': [{ type: core_1.Output },],
-    'videoWrapper': [{ type: core_1.ViewChild, args: ['videoWrapper',] },],
-    'qrCanvas': [{ type: core_1.ViewChild, args: ['qrCanvas',] },],
-};
 exports.QrScannerComponent = QrScannerComponent;
 //# sourceMappingURL=qrscanner.component.js.map

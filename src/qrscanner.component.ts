@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, Output, EventEmitter, OnDestroy, Renderer2, ElementRef, ViewChild, AfterViewInit} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, Renderer2, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { QRCode } from './qrdecode/qrcode'
 
 /**
@@ -123,44 +123,45 @@ export class QrScannerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private connectDevice(options: any): void {
 
-        const self = this;
-
-        function success(stream: any): void {
-            self.stream = stream;
-            if (self.isWebkit || self.isMoz) {
-                self.videoElement.src = window.URL.createObjectURL(stream);
+        const success = (stream: any): void => {
+            this.stream = stream;
+            if (this.isWebkit || this.isMoz) {
+                this.videoElement.src = window.URL.createObjectURL(stream);
             } else {
-                self.videoElement.src = stream;
+                this.videoElement.src = stream;
             }
-            self.gUM = true;
-            self.captureTimeout = setTimeout(captureToCanvas, self.updateTime);
+            this.gUM = true;
+            this.captureTimeout = setTimeout(captureToCanvas, this.updateTime);
+            return;
         }
 
-        function error(error: any): void {
+        const error = (): void => {
             this.gUM = false;
             return;
         }
 
-        function captureToCanvas(): void {
-            if (self.stop || !self.isDeviceConnected) {
+        const captureToCanvas = (): void => {
+            if (this.stop || !this.isDeviceConnected) {
                 return;
             }
-            if (self.gUM) {
+            if (this.gUM) {
                 try {
-                    self.gCtx.drawImage(self.videoElement, 0, 0, self.canvasWidth, self.canvasHeight);
-                    self.qrCode.decode(self.qrCanvas.nativeElement);
-                    if (!this.stopAfterScan) self.captureTimeout = setTimeout(captureToCanvas, self.updateTime);
+                    this.gCtx.drawImage(this.videoElement, 0, 0, this.canvasWidth, this.canvasHeight);
+                    this.qrCode.decode(this.qrCanvas.nativeElement);
+                    if (!this.stopAfterScan) {
+                        this.captureTimeout = setTimeout(() => captureToCanvas(), this.updateTime);
+                    }
                 } catch (e) {
                     if (this.debug) {
                         console.log(e);
                     }
-                    self.captureTimeout = setTimeout(captureToCanvas, self.updateTime);
+                    this.captureTimeout = setTimeout(() => captureToCanvas(), this.updateTime);
                 }
             }
         }
 
         if (this.isDeviceConnected && !this.captureTimeout) {
-            this.captureTimeout = setTimeout(captureToCanvas, this.updateTime);
+            this.captureTimeout = setTimeout(() => captureToCanvas(), this.updateTime);
             return;
         }
 
@@ -186,7 +187,7 @@ export class QrScannerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.captureTimeout = setTimeout(captureToCanvas, this.updateTime);
     }
 
-    private get findMediaDevices(): Promise<{deviceId: { exact: string }, facingMode: string } | boolean> {
+    private get findMediaDevices(): Promise<{ deviceId: { exact: string }, facingMode: string } | boolean> {
 
         const videoDevice =
             (dvc: MediaDeviceInfo) => dvc.kind === 'videoinput' && dvc.label.search(/back/i) > -1;

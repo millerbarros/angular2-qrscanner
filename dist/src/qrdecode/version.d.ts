@@ -27,10 +27,10 @@ export declare class Version {
     readonly DimensionForVersion: number;
     buildFunctionPattern: () => BitMatrix;
     getECBlocksForLevel: (ecLevel: any) => any;
-    static VERSION_DECODE_INFO: number[];
-    static VERSIONS: Version[];
     static getVersionForNumber(versionNumber: any): Version;
     static getProvisionalVersionForDimension(dimension: any): Version;
     static decodeVersionInformation(versionBits: any): Version;
     static buildVersions(): Version[];
+    static VERSION_DECODE_INFO: number[];
+    static VERSIONS: Version[];
 }

@@ -56,12 +56,14 @@ var QRCode = (function () {
         var data = reader.DataByte;
         var str = "";
         for (var i = 0; i < data.length; i++) {
-            for (var j = 0; j < data[i].length; j++)
+            for (var j = 0; j < data[i].length; j++) {
                 str += String.fromCharCode(data[i][j]);
+            }
         }
         var end = new Date().getTime();
         var time = end - start;
-        if(this.debug) { console.log("Capture time:", time); }
+        if (this.debug)
+            console.log("Capture time:", time);
         return str;
     };
     QRCode.prototype.grayScaleToBitmap = function (grayScale) {

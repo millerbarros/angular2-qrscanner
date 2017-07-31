@@ -15,22 +15,22 @@ var QrScannerModule = (function () {
             ngModule: QrScannerModule
         };
     };
+    QrScannerModule.decorators = [
+        { type: core_1.NgModule, args: [{
+                    imports: [
+                        common_1.CommonModule
+                    ],
+                    declarations: [
+                        qrscanner_component_1.QrScannerComponent
+                    ],
+                    exports: [
+                        qrscanner_component_1.QrScannerComponent
+                    ]
+                },] },
+    ];
+    /** @nocollapse */
+    QrScannerModule.ctorParameters = function () { return []; };
     return QrScannerModule;
 }());
-QrScannerModule.decorators = [
-    { type: core_1.NgModule, args: [{
-                imports: [
-                    common_1.CommonModule
-                ],
-                declarations: [
-                    qrscanner_component_1.QrScannerComponent
-                ],
-                exports: [
-                    qrscanner_component_1.QrScannerComponent
-                ]
-            },] },
-];
-/** @nocollapse */
-QrScannerModule.ctorParameters = function () { return []; };
 exports.QrScannerModule = QrScannerModule;
 //# sourceMappingURL=index.js.map

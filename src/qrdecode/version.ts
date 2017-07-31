@@ -22,72 +22,65 @@
 * limitations under the License.
 */
 
-import  {BitMatrix} from "./bitmat"
-import {FormatInformation} from "./formatinf"
+import { BitMatrix } from "./bitmat"
+import { FormatInformation } from "./formatinf"
 
-export class ECB{
+export class ECB {
 	count: any;
 	dataCodewords: any;
-	constructor(count: any,  dataCodewords: any){
+	constructor(count: any, dataCodewords: any) {
 		this.count = count;
 		this.dataCodewords = dataCodewords;
 	}
-	get Count()
-	{
+	get Count() {
 		return this.count;
 	};
 
-	get DataCodewords()
-	{
+	get DataCodewords() {
 		return this.dataCodewords;
 	};
 
 }
 
-export class ECBlocks{
+export class ECBlocks {
 
 	ecCodewordsPerBlock: any;
 	ecBlocks: any;
-	constructor( ecCodewordsPerBlock:any,  ecBlocks1:any,  ecBlocks2?:any){
+	constructor(ecCodewordsPerBlock: any, ecBlocks1: any, ecBlocks2?: any) {
 		this.ecCodewordsPerBlock = ecCodewordsPerBlock;
-		if(ecBlocks2)
+		if (ecBlocks2)
 			this.ecBlocks = new Array(ecBlocks1, ecBlocks2);
 		else
 			this.ecBlocks = new Array(ecBlocks1);
 	}
-	get ECCodewordsPerBlock()
-	{
+	get ECCodewordsPerBlock() {
 		return this.ecCodewordsPerBlock;
 	};
-	get TotalECCodewords()
-	{
-		return  this.ecCodewordsPerBlock * this.NumBlocks;
+	get TotalECCodewords() {
+		return this.ecCodewordsPerBlock * this.NumBlocks;
 	};
-	get NumBlocks()
-	{
+	get NumBlocks() {
 		var total = 0;
-		for (var i = 0; i < this.ecBlocks.length; i++)
-		{
+		for (var i = 0; i < this.ecBlocks.length; i++) {
 			total += this.ecBlocks[i].length;
 		}
 		return total;
 	};
 
-	getECBlocks=function()
-	{
+	getECBlocks = function () {
 		return this.ecBlocks;
 	}
 }
 
 
-export class Version{
+export class Version {
 
-	versionNumber:any;
-	alignmentPatternCenters:any;
-	ecBlocks:any;
+	versionNumber: any;
+	alignmentPatternCenters: any;
+	ecBlocks: any;
 	totalCodewords: any;
 
-	constructor( versionNumber: any,  alignmentPatternCenters: any,  ecBlocks1: any,  ecBlocks2: any,  ecBlocks3: any,  ecBlocks4: any){
+	constructor(versionNumber: any, alignmentPatternCenters: any, ecBlocks1: any, ecBlocks2: any, ecBlocks3: any, ecBlocks4: any) {
 		this.versionNumber = versionNumber;
 		this.alignmentPatternCenters = alignmentPatternCenters;
 		this.ecBlocks = new Array(ecBlocks1, ecBlocks2, ecBlocks3, ecBlocks4);
@@ -95,34 +88,27 @@ export class Version{
 		var total = 0;
 		var ecCodewords = ecBlocks1.ECCodewordsPerBlock;
 		var ecbArray = ecBlocks1.getECBlocks();
-		for (var i = 0; i < ecbArray.length; i++)
-		{
+		for (var i = 0; i < ecbArray.length; i++) {
 			var ecBlock = ecbArray[i];
 			total += ecBlock.Count * (ecBlock.DataCodewords + ecCodewords);
 		}
 		this.totalCodewords = total;
-		Version.VERSIONS = Version.buildVersions();
 	}
-	get VersionNumber()
-	{
-		return  this.versionNumber;
+	get VersionNumber() {
+		return this.versionNumber;
 	};
 
-	get AlignmentPatternCenters()
-	{
-		return  this.alignmentPatternCenters;
+	get AlignmentPatternCenters() {
+		return this.alignmentPatternCenters;
 	};
-	get TotalCodewords()
-	{
-		return  this.totalCodewords;
+	get TotalCodewords() {
+		return this.totalCodewords;
 	};
-	get DimensionForVersion()
-	{
-		return  17 + 4 * this.versionNumber;
+	get DimensionForVersion() {
+		return 17 + 4 * this.versionNumber;
 	};
 
-	buildFunctionPattern=function()
-	{
+	buildFunctionPattern = function () {
 		var dimension = this.DimensionForVersion;
 		var bitMatrix = new BitMatrix(dimension);
 
@@ -135,13 +121,10 @@ export class Version{
 
 		// Alignment patterns
 		var max = this.alignmentPatternCenters.length;
-		for (var x = 0; x < max; x++)
-		{
+		for (var x = 0; x < max; x++) {
 			var i = this.alignmentPatternCenters[x] - 2;
-			for (var y = 0; y < max; y++)
-			{
-				if ((x == 0 && (y == 0 || y == max - 1)) || (x == max - 1 && y == 0))
-				{
+			for (var y = 0; y < max; y++) {
+				if ((x == 0 && (y == 0 || y == max - 1)) || (x == max - 1 && y == 0)) {
 					// No alignment patterns near the three finder paterns
 					continue;
 				}
@@ -154,8 +137,7 @@ export class Version{
 		// Horizontal timing pattern
 		bitMatrix.setRegion(9, 6, dimension - 17, 1);
 
-		if (this.versionNumber > 6)
-		{
+		if (this.versionNumber > 6) {
 			// Version info, top right
 			bitMatrix.setRegion(dimension - 11, 0, 3, 6);
 			// Version info, bottom left
@@ -164,73 +146,56 @@ export class Version{
 
 		return bitMatrix;
 	}
-	getECBlocksForLevel=function( ecLevel: any)
-	{
+	getECBlocksForLevel = function (ecLevel: any) {
 		return this.ecBlocks[ecLevel.ordinal()];
 	}
 
-	static VERSION_DECODE_INFO = new Array(0x07C94, 0x085BC, 0x09A99, 0x0A4D3, 0x0BBF6, 0x0C762, 0x0D847, 0x0E60D, 0x0F928, 0x10B78, 0x1145D, 0x12A17, 0x13532, 0x149A6, 0x15683, 0x168C9, 0x177EC, 0x18EC4, 0x191E1, 0x1AFAB, 0x1B08E, 0x1CC1A, 0x1D33F, 0x1ED75, 0x1F250, 0x209D5, 0x216F0, 0x228BA, 0x2379F, 0x24B0B, 0x2542E, 0x26A64, 0x27541, 0x28C69);
-
-	static VERSIONS;
-
-	static getVersionForNumber( versionNumber: any)
-	{
-		if (versionNumber < 1 || versionNumber > 40)
-		{
+	static getVersionForNumber(versionNumber: any) {
+		if (versionNumber < 1 || versionNumber > 40) {
 			throw "ArgumentException";
 		}
 		return Version.VERSIONS[versionNumber - 1];
 	}
 
-	static getProvisionalVersionForDimension(dimension: any)
-	{
-		if (dimension % 4 != 1)
-		{
+	static getProvisionalVersionForDimension(dimension: any) {
+		if (dimension % 4 != 1) {
 			throw "Error getProvisionalVersionForDimension";
 		}
-		try
-		{
+		try {
 			return Version.getVersionForNumber((dimension - 17) >> 2);
 		}
-		catch ( iae)
-		{
+		catch (iae) {
 			throw "Error getVersionForNumber";
 		}
 	}
 
-	static decodeVersionInformation( versionBits: any)
-	{
+	static decodeVersionInformation(versionBits: any) {
 		var bestDifference = 0xffffffff;
 		var bestVersion = 0;
-		for (var i = 0; i < Version.VERSION_DECODE_INFO.length; i++)
-		{
+		for (var i = 0; i < Version.VERSION_DECODE_INFO.length; i++) {
 			var targetVersion = Version.VERSION_DECODE_INFO[i];
 			// Do the version info bits match exactly? done.
-			if (targetVersion == versionBits)
-			{
+			if (targetVersion == versionBits) {
 				return this.getVersionForNumber(i + 7);
 			}
 			// Otherwise see if this is the closest to a real version info bit string
 			// we have seen so far
 			var bitsDifference = FormatInformation.numBitsDiffering(versionBits, targetVersion);
-			if (bitsDifference < bestDifference)
-			{
+			if (bitsDifference < bestDifference) {
 				bestVersion = i + 7;
 				bestDifference = bitsDifference;
 			}
 		}
 		// We can tolerate up to 3 bits of error since no two version info codewords will
 		// differ in less than 4 bits.
-		if (bestDifference <= 3)
-		{
+		if (bestDifference <= 3) {
 			return this.getVersionForNumber(bestVersion);
 		}
 		// If we didn't find a close enough match, fail
 		return null;
 	}
 
-	static buildVersions()
-	{
+	static buildVersions() {
 		return new Array(new Version(1, new Array(), new ECBlocks(7, new ECB(1, 19)), new ECBlocks(10, new ECB(1, 16)), new ECBlocks(13, new ECB(1, 13)), new ECBlocks(17, new ECB(1, 9))),
 			new Version(2, new Array(6, 18), new ECBlocks(10, new ECB(1, 34)), new ECBlocks(16, new ECB(1, 28)), new ECBlocks(22, new ECB(1, 22)), new ECBlocks(28, new ECB(1, 16))),
 			new Version(3, new Array(6, 22), new ECBlocks(15, new ECB(1, 55)), new ECBlocks(26, new ECB(1, 44)), new ECBlocks(18, new ECB(2, 17)), new ECBlocks(22, new ECB(2, 13))),
@@ -257,7 +222,7 @@ export class Version{
 			new Version(24, new Array(6, 28, 54, 80, 106), new ECBlocks(30, new ECB(6, 117), new ECB(4, 118)), new ECBlocks(28, new ECB(6, 45), new ECB(14, 46)), new ECBlocks(30, new ECB(11, 24), new ECB(16, 25)), new ECBlocks(30, new ECB(30, 16), new ECB(2, 17))),
 			new Version(25, new Array(6, 32, 58, 84, 110), new ECBlocks(26, new ECB(8, 106), new ECB(4, 107)), new ECBlocks(28, new ECB(8, 47), new ECB(13, 48)), new ECBlocks(30, new ECB(7, 24), new ECB(22, 25)), new ECBlocks(30, new ECB(22, 15), new ECB(13, 16))),
 			new Version(26, new Array(6, 30, 58, 86, 114), new ECBlocks(28, new ECB(10, 114), new ECB(2, 115)), new ECBlocks(28, new ECB(19, 46), new ECB(4, 47)), new ECBlocks(28, new ECB(28, 22), new ECB(6, 23)), new ECBlocks(30, new ECB(33, 16), new ECB(4, 17))),
-			new Version(27, new Array(6, 34, 62, 90, 118), new ECBlocks(30, new ECB(8, 122), new ECB(4, 123)), new ECBlocks(28, new ECB(22, 45), new ECB(3, 46)), new ECBlocks(30, new ECB(8, 23), new ECB(26, 24)), new ECBlocks(30, new ECB(12, 15), 		new ECB(28, 16))),
+			new Version(27, new Array(6, 34, 62, 90, 118), new ECBlocks(30, new ECB(8, 122), new ECB(4, 123)), new ECBlocks(28, new ECB(22, 45), new ECB(3, 46)), new ECBlocks(30, new ECB(8, 23), new ECB(26, 24)), new ECBlocks(30, new ECB(12, 15), new ECB(28, 16))),
 			new Version(28, new Array(6, 26, 50, 74, 98, 122), new ECBlocks(30, new ECB(3, 117), new ECB(10, 118)), new ECBlocks(28, new ECB(3, 45), new ECB(23, 46)), new ECBlocks(30, new ECB(4, 24), new ECB(31, 25)), new ECBlocks(30, new ECB(11, 15), new ECB(31, 16))),
 			new Version(29, new Array(6, 30, 54, 78, 102, 126), new ECBlocks(30, new ECB(7, 116), new ECB(7, 117)), new ECBlocks(28, new ECB(21, 45), new ECB(7, 46)), new ECBlocks(30, new ECB(1, 23), new ECB(37, 24)), new ECBlocks(30, new ECB(19, 15), new ECB(26, 16))),
 			new Version(30, new Array(6, 26, 52, 78, 104, 130), new ECBlocks(30, new ECB(5, 115), new ECB(10, 116)), new ECBlocks(28, new ECB(19, 47), new ECB(10, 48)), new ECBlocks(30, new ECB(15, 24), new ECB(25, 25)), new ECBlocks(30, new ECB(23, 15), new ECB(25, 16))),
@@ -265,12 +230,16 @@ export class Version{
 			new Version(32, new Array(6, 34, 60, 86, 112, 138), new ECBlocks(30, new ECB(17, 115)), new ECBlocks(28, new ECB(10, 46), new ECB(23, 47)), new ECBlocks(30, new ECB(10, 24), new ECB(35, 25)), new ECBlocks(30, new ECB(19, 15), new ECB(35, 16))),
 			new Version(33, new Array(6, 30, 58, 86, 114, 142), new ECBlocks(30, new ECB(17, 115), new ECB(1, 116)), new ECBlocks(28, new ECB(14, 46), new ECB(21, 47)), new ECBlocks(30, new ECB(29, 24), new ECB(19, 25)), new ECBlocks(30, new ECB(11, 15), new ECB(46, 16))),
 			new Version(34, new Array(6, 34, 62, 90, 118, 146), new ECBlocks(30, new ECB(13, 115), new ECB(6, 116)), new ECBlocks(28, new ECB(14, 46), new ECB(23, 47)), new ECBlocks(30, new ECB(44, 24), new ECB(7, 25)), new ECBlocks(30, new ECB(59, 16), new ECB(1, 17))),
-			new Version(35, new Array(6, 30, 54, 78, 102, 126, 150), new ECBlocks(30, new ECB(12, 121), new ECB(7, 122)), new ECBlocks(28, new ECB(12, 47), new ECB(26, 48)), new ECBlocks(30, new ECB(39, 24), new ECB(14, 25)),new ECBlocks(30, new ECB(22, 15), new ECB(41, 16))),
+			new Version(35, new Array(6, 30, 54, 78, 102, 126, 150), new ECBlocks(30, new ECB(12, 121), new ECB(7, 122)), new ECBlocks(28, new ECB(12, 47), new ECB(26, 48)), new ECBlocks(30, new ECB(39, 24), new ECB(14, 25)), new ECBlocks(30, new ECB(22, 15), new ECB(41, 16))),
 			new Version(36, new Array(6, 24, 50, 76, 102, 128, 154), new ECBlocks(30, new ECB(6, 121), new ECB(14, 122)), new ECBlocks(28, new ECB(6, 47), new ECB(34, 48)), new ECBlocks(30, new ECB(46, 24), new ECB(10, 25)), new ECBlocks(30, new ECB(2, 15), new ECB(64, 16))),
 			new Version(37, new Array(6, 28, 54, 80, 106, 132, 158), new ECBlocks(30, new ECB(17, 122), new ECB(4, 123)), new ECBlocks(28, new ECB(29, 46), new ECB(14, 47)), new ECBlocks(30, new ECB(49, 24), new ECB(10, 25)), new ECBlocks(30, new ECB(24, 15), new ECB(46, 16))),
 			new Version(38, new Array(6, 32, 58, 84, 110, 136, 162), new ECBlocks(30, new ECB(4, 122), new ECB(18, 123)), new ECBlocks(28, new ECB(13, 46), new ECB(32, 47)), new ECBlocks(30, new ECB(48, 24), new ECB(14, 25)), new ECBlocks(30, new ECB(42, 15), new ECB(32, 16))),
 			new Version(39, new Array(6, 26, 54, 82, 110, 138, 166), new ECBlocks(30, new ECB(20, 117), new ECB(4, 118)), new ECBlocks(28, new ECB(40, 47), new ECB(7, 48)), new ECBlocks(30, new ECB(43, 24), new ECB(22, 25)), new ECBlocks(30, new ECB(10, 15), new ECB(67, 16))),
 			new Version(40, new Array(6, 30, 58, 86, 114, 142, 170), new ECBlocks(30, new ECB(19, 118), new ECB(6, 119)), new ECBlocks(28, new ECB(18, 47), new ECB(31, 48)), new ECBlocks(30, new ECB(34, 24), new ECB(34, 25)), new ECBlocks(30, new ECB(20, 15), new ECB(61, 16))));
 	}
+
+	static VERSION_DECODE_INFO = new Array(0x07C94, 0x085BC, 0x09A99, 0x0A4D3, 0x0BBF6, 0x0C762, 0x0D847, 0x0E60D, 0x0F928, 0x10B78, 0x1145D, 0x12A17, 0x13532, 0x149A6, 0x15683, 0x168C9, 0x177EC, 0x18EC4, 0x191E1, 0x1AFAB, 0x1B08E, 0x1CC1A, 0x1D33F, 0x1ED75, 0x1F250, 0x209D5, 0x216F0, 0x228BA, 0x2379F, 0x24B0B, 0x2542E, 0x26A64, 0x27541, 0x28C69);
+
+	static VERSIONS = Version.buildVersions();
 }
 
