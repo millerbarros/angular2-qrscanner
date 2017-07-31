@@ -64,7 +64,9 @@ var QrScannerComponent = (function () {
             clearTimeout(this.captureTimeout);
             this.captureTimeout = false;
         }
-        this.stream.getTracks()[0].stop();
+        if (this.stream) {
+            this.stream.getTracks()[0].stop();
+        }
         this.stop = true;
     };
     QrScannerComponent.prototype.isCanvasSupported = function () {
